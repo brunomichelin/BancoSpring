@@ -70,8 +70,10 @@ public class BancoService {
             throw new RuntimeException("Saldo Insuficiente! - Não pode zerar o Saldo.");
 
         TransferenciaDTO transf = new TransferenciaDTO();
-        transf.setRemetente(modelMapper.map(remetente, ContaDTO.class));
-        transf.setDestinatario(modelMapper.map(destinatario, ContaDTO.class));
+        //transf.setRemetente(modelMapper.map(remetente, ContaDTO.class));
+        //transf.setDestinatario(modelMapper.map(destinatario, ContaDTO.class));
+        transf.setRemetente(new ContaDTO(new ContaIdDTO(remetente.getContaId().getId(), remetente.getContaId().getAgencia()), remetente.getSaldo(), remetente.getStatus()));
+        transf.setDestinatario(new ContaDTO(new ContaIdDTO(destinatario.getContaId().getId(), destinatario.getContaId().getAgencia()), destinatario.getSaldo(), destinatario.getStatus()));
         transf.setValor(request.getValor());
 
         enviarNotificacao(remetente.getPessoa());
@@ -100,7 +102,11 @@ public class BancoService {
         else
             throw new RuntimeException("Deposito vazio!");
 
-        return modelMapper.map(conta, ContaDTO.class);
+        enviarNotificacao(conta.getPessoa());
+
+        //return modelMapper.map(conta, ContaDTO.class);
+
+        return new ContaDTO(new ContaIdDTO(conta.getContaId().getId(), conta.getContaId().getAgencia()), conta.getSaldo(), conta.getStatus());
     }
 
     public void enviarNotificacao(Pessoa pessoa) {
