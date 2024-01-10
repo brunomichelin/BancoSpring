@@ -33,6 +33,6 @@ public class Conta {
     @NotNull @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne(optional = true)
+    @ManyToOne(optional = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Pessoa pessoa;
 }

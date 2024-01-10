@@ -3,6 +3,7 @@ package com.BrunoMichelin.demo.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
@@ -38,11 +39,9 @@ public class PessoaService {
     private final ModelMapper modelMapper;
 
     public List<PessoaDTO> obterTodasPessoas() {
-        List<PessoaDTO> listaPessoas = pessoaRepository.findAll().stream()
+        return pessoaRepository.findAll().stream()
                 .map(p -> modelMapper.map(p, PessoaDTO.class))
                 .collect(Collectors.toList());
-
-        return listaPessoas;
     }
 
     public PessoaDTO criarPessoaConta(PessoaRequestDTO request) {
@@ -73,12 +72,13 @@ public class PessoaService {
         
         request.setCpfCnpj(request.getCpfCnpj().replace(".", "").replace("-", ""));
 
+        Optional<Pessoa> pessoaOp = pessoaRepository.findById(request.getCpfCnpj());
         Pessoa pessoa = null;
 
-        if (!pessoaRepository.findById(request.getCpfCnpj()).isPresent())
+        if (!pessoaOp.isPresent())
             throw new EntityNotFoundException();
         else
-            pessoa = pessoaRepository.findById(request.getCpfCnpj()).get();
+            pessoa = pessoaOp.get();
 
         Conta conta = Conta
             .builder()
@@ -94,10 +94,8 @@ public class PessoaService {
     }
 
     public List<ContaDTO> obterTodasContas() {
-        List<ContaDTO> listaContas = contaRepository.findAll().stream()
+        return contaRepository.findAll().stream()
                 .map(c -> modelMapper.map(c, ContaDTO.class))
                 .collect(Collectors.toList());
-
-        return listaContas;
     }
 }
